@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex"><meta name="theme-color" content="#09090b">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="ALAGA">
+<link rel="manifest" href="alaga-system.webmanifest"><link rel="apple-touch-icon" href="icono-192.png"><link rel="icon" href="icono-192.png">
+<title>ALAGA SYSTEM</title>
+<!-- Puerta de la DEMO: el sistema viaja CIFRADO (ALAGA-System-v0.4.json). Sin el código de Gand no hay nada que leer ni copiar. -->
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}
+body{margin:0;min-height:100vh;min-height:100dvh;display:grid;place-items:center;background:radial-gradient(70% 50% at 50% 40%,rgba(70,50,18,.45),transparent 70%),#09090b;color:#f4f4f5;
+  font:16px/1.45 -apple-system,"SF Pro Text",BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:24px 20px calc(env(safe-area-inset-bottom) + 24px)}
+.puerta{width:100%;max-width:360px;text-align:center}
+.puerta img{width:112px;height:112px;border-radius:26px;box-shadow:0 18px 50px rgba(223,186,115,.18),0 0 0 1px rgba(223,186,115,.25)}
+h1{font-size:22px;letter-spacing:.06em;margin:22px 0 4px;color:#f5e3b5}
+p.sub{margin:0 0 26px;color:#a1a1aa;font-size:15px}
+input[type=text]{width:100%;font:600 22px/1 ui-monospace,"SF Mono",Menlo,monospace;letter-spacing:.18em;text-align:center;text-transform:uppercase;
+  padding:16px 12px;border-radius:14px;border:1px solid #3f3f46;background:#18181b;color:#fff;outline:none}
+input[type=text]:focus{border-color:#dfba73;box-shadow:0 0 0 3px rgba(223,186,115,.25)}
+label.rec{display:flex;align-items:center;justify-content:center;gap:10px;margin:16px 0 18px;color:#d4d4d8;font-size:15px}
+label.rec input{width:22px;height:22px;accent-color:#dfba73}
+button{width:100%;min-height:54px;border:0;border-radius:14px;font:700 17px/1 inherit;font-family:inherit;color:#1a1408;cursor:pointer;
+  background:linear-gradient(90deg,#c29b53,#dfba73 40%,#f5e3b5 70%,#dfba73)}
+button:disabled{opacity:.6}
+#e{min-height:1.4em;margin:14px 0 0;color:#f2b8b5;font-size:15px}
+small{display:block;margin-top:28px;color:#71717a;font-size:12px}
+</style></head><body>
+<main class="puerta">
+  <img src="icono-192.png" alt="ALAGA Car Wash">
+  <h1>ALAGA SYSTEM</h1>
+  <p class="sub">Escribe tu código de acceso</p>
+  <form id="f" autocomplete="off">
+    <input type="text" id="c" inputmode="text" autocapitalize="characters" autocorrect="off" spellcheck="false" placeholder="XXXX-XXXX" aria-label="Código de acceso" required>
+    <label class="rec"><input type="checkbox" id="r"> Recordar en este teléfono</label>
+    <button id="b">Entrar</button>
+    <p id="e" role="alert"></p>
+  </form>
+  <small>Acceso privado · versión de demostración</small>
+</main>
+<script>
+"use strict";
+(async function(){
+  var ARCH="ALAGA-System-v0.4.json", K="alaga-demo-llave:"+ARCH, $=function(i){return document.getElementById(i);};
+  if("serviceWorker" in navigator&&window.isSecureContext) navigator.serviceWorker.register("sw-alaga.js",{scope:"./"}).catch(function(){});
+  var norm=function(s){return String(s).toUpperCase().replace(/[^A-Z0-9]/g,"");};
+  var b64=function(s){return Uint8Array.from(atob(s),function(c){return c.charCodeAt(0);});};
+  var paq=null;
+  async function paquete(){ if(paq) return paq; var r=await fetch(ARCH,{cache:"no-cache"}); if(!r.ok) throw new Error("No se pudo descargar el sistema. Revisa la conexión."); return paq=await r.json(); }
+  async function llaveDe(codigo,p){
+    var base=await crypto.subtle.importKey("raw",new TextEncoder().encode(norm(codigo)),"PBKDF2",false,["deriveKey"]);
+    return crypto.subtle.deriveKey({name:"PBKDF2",salt:b64(p.salt),iterations:p.iter,hash:"SHA-256"},base,{name:"AES-GCM",length:256},true,["decrypt"]);
+  }
+  async function descifrar(llave,p){ return new TextDecoder().decode(await crypto.subtle.decrypt({name:"AES-GCM",iv:b64(p.iv)},llave,b64(p.data))); }
+  function abrir(html){ document.open(); document.write(html); document.close(); }
+  /* ¿Recordado en este teléfono? */
+  try{ var g=localStorage.getItem(K);
+    if(g){ var p0=await paquete(), k0=await crypto.subtle.importKey("raw",b64(g),"AES-GCM",false,["decrypt"]);
+      try{ return abrir(await descifrar(k0,p0)); }catch(x){ localStorage.removeItem(K); } } }catch(x){}
+  var fallos=0;
+  $("f").addEventListener("submit",async function(ev){
+    ev.preventDefault(); var b=$("b"), e=$("e"); if(b.disabled) return;
+    if(norm($("c").value).length<8){ e.textContent="El código tiene 8 letras y números."; return; }
+    b.disabled=true; b.textContent="Abriendo…"; e.textContent="";
+    try{
+      var p=await paquete(), k=await llaveDe($("c").value,p), html;
+      try{ html=await descifrar(k,p); }catch(x){ throw new Error("Código incorrecto."); }
+      if($("r").checked){ var raw=new Uint8Array(await crypto.subtle.exportKey("raw",k)); localStorage.setItem(K,btoa(String.fromCharCode.apply(null,raw))); }
+      abrir(html);
+    }catch(x){
+      fallos++; e.textContent=x.message; var espera=fallos>=5?30000:600;
+      setTimeout(function(){ b.disabled=false; b.textContent="Entrar"; },espera);
+      if(espera>1000) e.textContent+=" Espera 30 segundos.";
+    }
+  });
+})();
+</script></body></html>

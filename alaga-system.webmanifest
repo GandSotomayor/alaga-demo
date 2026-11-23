@@ -1,0 +1,33 @@
+{
+  "name": "ALAGA SYSTEM",
+  "short_name": "ALAGA",
+  "description": "Recepción, cobro y control de ALAGA Car Wash",
+  "lang": "es-MX",
+  "start_url": "ALAGA-System-v0.4.html",
+  "scope": "./",
+  "id": "ALAGA-System-v0.4.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
+  "icons": [
+    {
+      "src": "icono-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icono-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icono-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
