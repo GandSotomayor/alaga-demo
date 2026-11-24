@@ -912,7 +912,9 @@ button.fkpi{cursor:pointer}
 .tour-x{all:unset;cursor:pointer;display:grid;place-items:center;width:36px;height:36px;border-radius:50%}
 .tour-t{font-size:19px;margin:6px 0 4px}
 .tour-d{margin:0 0 12px;color:var(--ink-2);font-size:var(--fs-sm);line-height:1.5}
-.tour-acc{display:flex;gap:8px;flex-wrap:wrap}.tour-acc .btn{flex:1;min-width:0;width:auto;white-space:nowrap}
+/* «Ver en la app» a lo ancho arriba; Anterior y Siguiente abajo, lado a lado (en 390 px no caben 3 en fila) */
+.tour-acc{display:grid;grid-template-columns:1fr 1fr;gap:8px}.tour-acc .btn{min-width:0;width:100%;white-space:nowrap}
+.tour-acc [data-t="ver"]{grid-column:1/-1;order:-1}
 /* v1.3 · Modo explicación (solo DEMO): guía arriba, se encoge al tocar la app; resalta lo que hay que tocar */
 .tour-btns{display:grid;gap:8px}
 .explica{position:fixed;top:calc(env(safe-area-inset-top) + 8px);left:10px;right:10px;z-index:75;max-width:520px;margin:0 auto;
