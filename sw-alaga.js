@@ -3,9 +3,8 @@
    NUNCA guarda /api/ (datos de la caja fuerte): esas peticiones pasan directo a la red, sin copia.
    Primero la red (así cada actualización llega en cuanto hay conexión); si no responde en 4 s, la copia guardada. */
 "use strict";
-const CACHE = "alaga-app-v1";
-const BASICOS = ["ALAGA-System-v0.4.html", "ALAGA-Finanzas-v0.4.html", "ALAGA-System-v0.4.json", "ALAGA-Finanzas-v0.4.json",   // .json: solo en la DEMO web (cifrada)
-  "alaga-system.webmanifest", "finanzas.webmanifest", "icono-192.png", "icono-512.png", "icono-maskable-512.png"];
+const CACHE = "alaga-app-v2";   // v2: la DEMO web vuelve a abrir sin código (se descarta la copia anterior)
+const BASICOS = ["ALAGA-System-v0.4.html", "ALAGA-Finanzas-v0.4.html",  "alaga-system.webmanifest", "finanzas.webmanifest", "icono-192.png", "icono-512.png", "icono-maskable-512.png"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => Promise.all(BASICOS.map(f => c.add(new Request(f, { cache: "no-store" })).catch(() => null)))).then(() => self.skipWaiting()));
 });

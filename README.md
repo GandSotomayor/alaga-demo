@@ -1,3 +1,4 @@
-# ALAGA SYSTEM · DEMO privada
+# ALAGA SYSTEM · DEMO
 
-Acceso solo con código. El sistema se publica **cifrado** (AES-256-GCM); sin el código no hay nada que leer.
+Versión de demostración de ALAGA SYSTEM (ALAGA Car Wash). Datos ficticios; lo capturado se queda solo en ese teléfono.
+Se instala como app (Safari › Compartir › Agregar a inicio), abre sin Wi-Fi y permite probar la cámara.
